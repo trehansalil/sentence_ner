@@ -42,8 +42,8 @@ Delhi    I-GEO
 
 1. **Clone the repository:**
 ```bash
-git clone 
-cd ner-project
+git clone https://github.com/trehansalil/sentence_ner
+cd sentence_ner
 ```
 
 2. **Install uv (if not already installed):**
