@@ -45,12 +45,8 @@ class NERDataProcessor:
         Returns:
             pd.DataFrame: Loaded dataset
         """
-        try:
-            # Try reading with a different encoding
-            self.df = pd.read_csv(file_path, encoding='latin-1')
-        except UnicodeDecodeError:
-            # Fallback to default encoding if latin-1 fails
-            self.df = pd.read_csv(file_path, encoding='iso-8859-1')
+        # Try reading with a different encoding
+        self.df = pd.read_csv(file_path, encoding='latin-1')
         return self.df
     
     def create_sentences(self, df: pd.DataFrame) -> List[Tuple[List[str], List[str]]]:
@@ -81,13 +77,19 @@ class NERDataProcessor:
             sentences: List of (words, tags) tuples
         """
         # Build word vocabulary
+        # Assuming 'sentences' is the list of (words, tags) pairs
         all_words = []
         all_tags = []
-        
+
         for words, tags in sentences:
-            all_words.extend(words)
+            # Iterate through each word in the sentence
+            for word in words:
+                # Check if the individual word is a string before adding it
+                if isinstance(word, str):
+                    all_words.append(word)
+            # Add all tags from the sentence (assuming tags are always strings or handled separately)
             all_tags.extend(tags)
-        
+                
         # Create word mappings (including UNK token)
         unique_words = ['<PAD>', '<UNK>'] + sorted(list(set(all_words)))
         self.word_to_id = {word: idx for idx, word in enumerate(unique_words)}
