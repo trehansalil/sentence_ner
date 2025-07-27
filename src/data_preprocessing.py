@@ -35,17 +35,22 @@ class NERDataProcessor:
         self.vocab_size = 0
         self.num_tags = 0
         
-    def load_data(self, file_path: str) -> pd.DataFrame:
+    def load_data(self, file_path):
         """
-        Load the NER dataset.
-        
+        Loads the dataset from a CSV file.
+
         Args:
-            file_path (str): Path to the dataset file
-            
+            file_path (str): Path to the CSV file.
+
         Returns:
             pd.DataFrame: Loaded dataset
         """
-        self.df = pd.read_csv(file_path)
+        try:
+            # Try reading with a different encoding
+            self.df = pd.read_csv(file_path, encoding='latin-1')
+        except UnicodeDecodeError:
+            # Fallback to default encoding if latin-1 fails
+            self.df = pd.read_csv(file_path, encoding='iso-8859-1')
         return self.df
     
     def create_sentences(self, df: pd.DataFrame) -> List[Tuple[List[str], List[str]]]:
