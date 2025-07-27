@@ -23,7 +23,17 @@ def load_dataset(file_path: str) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Loaded dataset
     """
-    return pd.read_csv(file_path)
+    # Try different encodings to handle encoding issues
+    encodings = ['utf-8', 'latin-1', 'iso-8859-1', 'cp1252']
+    
+    for encoding in encodings:
+        try:
+            return pd.read_csv(file_path, encoding=encoding)
+        except UnicodeDecodeError:
+            continue
+    
+    # If all encodings fail, raise an error
+    raise ValueError(f"Unable to read file {file_path} with any of the tried encodings: {encodings}")
 
 
 def get_unique_tags(df: pd.DataFrame) -> List[str]:
