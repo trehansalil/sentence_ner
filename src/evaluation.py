@@ -67,24 +67,18 @@ class NERModelEvaluator:
     
     def _flatten_sequences(self, sequences: np.ndarray) -> List[int]:
         """
-        Flatten padded sequences, removing padding tokens.
+        Flatten padded sequences, including all tokens.
         
         Args:
             sequences (np.ndarray): Padded sequences
             
         Returns:
-            List[int]: Flattened sequences without padding
+            List[int]: Flattened sequences
         """
         flattened = []
         for seq in sequences:
             for token in seq:
-                # Assuming 'O' tag has ID 0 and is used for padding
-                if token != self.tag_to_id.get('O', 0) or len(flattened) == 0:
-                    flattened.append(token)
-                elif token == self.tag_to_id.get('O', 0):
-                    # Only add 'O' if it's not padding (i.e., if the previous token wasn't 'O')
-                    if flattened and flattened[-1] != self.tag_to_id.get('O', 0):
-                        flattened.append(token)
+                flattened.append(token)
         return flattened
     
     def _calculate_token_level_metrics(self, y_true: List[int], y_pred: List[int]) -> Dict[str, float]:
@@ -293,10 +287,13 @@ class NERModelEvaluator:
         y_true = y_true[:min_len]
         y_pred = y_pred[:min_len]
         
-        target_names = [self.id_to_tag[i] for i in sorted(self.id_to_tag.keys())]
+        # Get all possible labels and their names
+        all_labels = sorted(map(int, self.id_to_tag.keys()))
+        target_names = [self.id_to_tag[label] for label in all_labels]
         
         return classification_report(
             y_true, y_pred, 
+            labels=all_labels,  # Explicitly specify all possible labels
             target_names=target_names, 
             zero_division=0
         )
