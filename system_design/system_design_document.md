@@ -9,45 +9,110 @@ This document outlines the system design for a Named Entity Recognition (NER) sy
 ### 2.1 High-Level Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    NER SYSTEM ARCHITECTURE                      │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐         │
-│  │   Data      │    │   Model     │    │  Inference  │         │
-│  │ Processing  │───▶│  Training   │───▶│   Service   │         │
-│  │  Pipeline   │    │  Pipeline   │    │             │         │
-│  └─────────────┘    └─────────────┘    └─────────────┘         │
-│         │                   │                   │              │
-│         ▼                   ▼                   ▼              │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐         │
-│  │   Data      │    │   Model     │    │  Monitoring │         │
-│  │ Validation  │    │ Evaluation  │    │ & Alerting  │         │
-│  └─────────────┘    └─────────────┘    └─────────────┘         │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    NER SYSTEM ARCHITECTURE - MODEL 2 OPTIMIZED              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌─────────────┐    ┌─────────────┐    ┌────────────────────────────────┐   │
+│  │   Data      │    │ Multi-Model │    │     Intelligent Inference     │   │
+│  │ Processing  │───▶│  Training   │───▶│         Service               │   │
+│  │  Pipeline   │    │  Pipeline   │    │  ┌─────────────────────────┐   │   │
+│  │             │    │             │    │  │   Model 2 (Primary)    │   │   │
+│  │ • Dual      │    │ • Model 2   │    │  │   90% Traffic          │   │   │
+│  │   Encoding  │    │ • Baseline  │    │  │   99.9% F1-Score       │   │   │
+│  │ • IOB2      │    │ • Advanced  │    │  └─────────────────────────┘   │   │
+│  │   Tagging   │    │             │    │  ┌─────────────────────────┐   │   │
+│  └─────────────┘    └─────────────┘    │  │   Baseline (Speed)     │   │   │
+│         │                   │          │  │   8% Traffic           │   │   │
+│         ▼                   ▼          │  │   <15ms Response       │   │   │
+│  ┌─────────────┐    ┌─────────────┐    │  └─────────────────────────┘   │   │
+│  │   Data      │    │   Model     │    │  ┌─────────────────────────┐   │   │
+│  │ Validation  │    │ Evaluation  │    │  │   Advanced (Backup)    │   │   │
+│  │             │    │             │    │  │   2% Traffic           │   │   │
+│  │ • Quality   │    │ • A/B       │    │  │   Fallback Scenarios   │   │   │
+│  │   Checks    │    │   Testing   │    │  └─────────────────────────┘   │   │
+│  └─────────────┘    └─────────────┘    └────────────────────────────────┘   │
+│                                                           │                 │
+│                                                           ▼                 │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                    Real-time Monitoring & Analytics                 │   │
+│  │  • Performance Metrics    • A/B Test Results   • Error Analysis    │   │
+│  │  • Traffic Distribution   • Model Comparison   • Health Monitoring  │   │
+│  │  • Latency Tracking      • Accuracy Metrics   • Auto-failover      │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### 2.2 Component Architecture with Model 2 Integration
 
 ```
 Data Layer:
-├── Raw Data (CSV)
-├── Preprocessed Data (NPZ) - Dual encoding support
-├── Model Artifacts (3 models)
-└── Evaluation Results (Comprehensive comparison)
+├── Raw Data (CSV/JSON) - Input documents and annotations
+├── Preprocessed Data (NPZ) - Dual encoding support for optimal performance
+│   ├── Categorical Encoding (One-hot) - Model 2 Primary (99.9% F1-score)
+│   └── Sparse Categorical (Integer) - Baseline & Advanced models
+├── Model Artifacts (3 production models)
+│   ├── model2_optimized.h5 (312K params) - Primary production 
+│   ├── baseline_speed.h5 (401K params) - Speed-critical requests
+│   └── advanced_backup.h5 (1.278M params) - Backup scenarios
+└── Evaluation Results - Comprehensive comparison and benchmarks
 
 Processing Layer:
-├── Enhanced Data Preprocessing (Categorical + Sparse encoding)
+├── Enhanced Data Preprocessing 
+│   ├── Tokenization & Sequence Padding (max_len: 75 for Model 2)
+│   ├── Vocabulary Building & Encoding (50K vocab optimized)
+│   ├── IOB2 Tag Processing & Categorical Conversion
+│   └── Train/Validation Split (80/20) with stratified sampling
 ├── Feature Engineering
+│   ├── Word Embeddings (50-dim optimized for Model 2)
+│   ├── Context Window Processing
+│   └── Sequence Length Optimization (75 tokens)
 ├── Multi-Model Training Pipeline
+│   ├── Model 2: BiLSTM + Categorical (10 epochs, batch_size=64)
+│   ├── Baseline: Feedforward NN (13 epochs, batch_size=32)
+│   └── Advanced: Complex BiLSTM (16 epochs, batch_size=32)
 └── Comprehensive Model Evaluation
+    ├── Token-level Metrics (F1, Precision, Recall)
+    ├── Entity-level Performance Analysis  
+    ├── Cross-model Comparison & Benchmarking
+    └── Production Performance Validation
 
 Model Layer:
-├── Baseline Model (Feedforward NN) - Speed-optimized
-├── Advanced Model (Complex BiLSTM) - Backup/Comparison  
 ├── **Model 2 (Optimized BiLSTM)** - Primary production model 🏆
-└── Intelligent Model Registry with selection logic
+│   ├── Architecture: Embedding(50) → BiLSTM(100) → Dense(softmax)
+│   ├── Performance: 99.89% F1-Score, 23ms latency
+│   ├── Parameters: 312K (75% fewer than Advanced)
+│   └── Use Case: Primary production (90% traffic)
+├── Baseline Model (Feedforward NN) - Speed-optimized
+│   ├── Architecture: Embedding(100) → Dense(128) → Dense(64) → Dense(softmax) 
+│   ├── Performance: 91.51% F1-Score, 12ms latency
+│   ├── Parameters: 401K
+│   └── Use Case: Speed-critical applications (8% traffic)
+├── Advanced Model (Complex BiLSTM) - Backup/Comparison
+│   ├── Architecture: Embedding(200) → BiLSTM(128) → BiLSTM(64) → Dense(softmax)
+│   ├── Performance: 89.78% F1-Score, 45ms latency  
+│   ├── Parameters: 1.278M
+│   └── Use Case: Backup scenarios (2% traffic)
+└── Intelligent Model Registry
+    ├── Performance-based Routing Logic
+    ├── A/B Testing Framework 
+    ├── Auto-failover & Circuit Breaker
+    └── Real-time Model Selection
+
+Deployment Layer:
+├── API Gateway with intelligent routing
+│   ├── Model 2 Primary Endpoint (90% traffic)
+│   ├── Speed-Critical Endpoint (Baseline, <15ms)
+│   └── Backup/Comparison Endpoint (Advanced)
+├── Load Balancer with Health Monitoring
+├── Container Orchestration (Docker + Kubernetes)
+└── Production Monitoring & Analytics
+    ├── Real-time Performance Metrics
+    ├── Traffic Distribution Analysis
+    ├── Model Comparison Dashboard
+    └── Automated Alerting & Scaling
+```
 
 Service Layer:
 ├── API Gateway with intelligent routing
@@ -429,68 +494,639 @@ results:
 
 ### 7.2 API Design
 
-**Prediction Endpoint:**
+**Primary Prediction Endpoint (Model 2 Optimized):**
 ```python
 POST /api/v1/predict
 Content-Type: application/json
+Authorization: Bearer <api_key>
 
 {
     "text": "Barack Obama visited New York yesterday.",
-    "model": "advanced",  # optional: baseline | advanced
+    "model": "model2",  # optional: model2 | baseline | advanced | auto
     "return_confidence": true,  # optional
-    "output_format": "json"  # optional: json | iob
+    "output_format": "json",  # optional: json | iob | entities_only
+    "speed_priority": false,  # optional: true for <15ms response
+    "include_metrics": false  # optional: include processing details
 }
 
 Response:
 {
     "predictions": [
-        {"word": "Barack", "tag": "B-PER", "confidence": 0.95},
-        {"word": "Obama", "tag": "I-PER", "confidence": 0.92},
-        {"word": "visited", "tag": "O", "confidence": 0.98},
-        {"word": "New", "tag": "B-GEO", "confidence": 0.89},
-        {"word": "York", "tag": "I-GEO", "confidence": 0.87},
-        {"word": "yesterday", "tag": "O", "confidence": 0.96}
+        {"word": "Barack", "tag": "B-PER", "confidence": 0.998},
+        {"word": "Obama", "tag": "I-PER", "confidence": 0.997},
+        {"word": "visited", "tag": "O", "confidence": 0.999},
+        {"word": "New", "tag": "B-GEO", "confidence": 0.995},
+        {"word": "York", "tag": "I-GEO", "confidence": 0.994},
+        {"word": "yesterday", "tag": "O", "confidence": 0.998}
     ],
     "entities": [
-        {"text": "Barack Obama", "type": "PER", "start": 0, "end": 12},
-        {"text": "New York", "type": "GEO", "start": 21, "end": 29}
+        {"text": "Barack Obama", "type": "PER", "start": 0, "end": 12, "confidence": 0.997},
+        {"text": "New York", "type": "GEO", "start": 21, "end": 29, "confidence": 0.994}
     ],
-    "processing_time_ms": 15,
-    "model_used": "advanced"
+    "processing_time_ms": 23,
+    "model_used": "model2",
+    "model_version": "2.1.0",
+    "f1_score": 0.999,
+    "request_id": "req_12345",
+    "routing_decision": "primary_production"
 }
 ```
 
-**Batch Prediction Endpoint:**
+**Intelligent Batch Prediction Endpoint:**
 ```python
 POST /api/v1/predict/batch
 Content-Type: application/json
+Authorization: Bearer <api_key>
 
 {
     "texts": [
         "Barack Obama visited New York yesterday.",
-        "Microsoft was founded by Bill Gates."
+        "Microsoft was founded by Bill Gates.",
+        "Apple Inc. released a new iPhone model."
     ],
-    "model": "advanced"
+    "model": "auto",  # intelligent routing based on load and performance
+    "parallel_processing": true,  # optional: process in parallel
+    "max_latency_ms": 100,  # optional: SLA requirement
+    "return_confidence": true
+}
+
+Response:
+{
+    "results": [
+        {
+            "text": "Barack Obama visited New York yesterday.",
+            "predictions": [...],
+            "entities": [...],
+            "processing_time_ms": 23,
+            "model_used": "model2"
+        },
+        {
+            "text": "Microsoft was founded by Bill Gates.",
+            "predictions": [...],
+            "entities": [...],
+            "processing_time_ms": 18,
+            "model_used": "model2"
+        },
+        {
+            "text": "Apple Inc. released a new iPhone model.",
+            "predictions": [...],
+            "entities": [...],
+            "processing_time_ms": 12,
+            "model_used": "baseline"
+        }
+    ],
+    "batch_id": "batch_67890",
+    "total_processing_time_ms": 156,
+    "average_confidence": 0.996,
+    "models_used": {"model2": 2, "baseline": 1},
+    "routing_efficiency": 0.98
 }
 ```
 
-**Health Check Endpoint:**
+**Production Health Check Endpoint:**
 ```python
 GET /api/v1/health
 
 Response:
 {
     "status": "healthy",
+    "system_version": "2.1.0",
     "models": {
-        "baseline": {"status": "loaded", "version": "1.0.0"},
-        "advanced": {"status": "loaded", "version": "1.0.0"}
+        "model2": {
+            "status": "loaded", 
+            "version": "2.1.0",
+            "f1_score": 0.9989,
+            "avg_latency_ms": 23,
+            "requests_served": 45678,
+            "error_rate": 0.0001,
+            "memory_usage_mb": 1200,
+            "cpu_usage_percent": 45
+        },
+        "baseline": {
+            "status": "loaded", 
+            "version": "1.2.0",
+            "f1_score": 0.9151,
+            "avg_latency_ms": 12,
+            "requests_served": 3456,
+            "error_rate": 0.0023,
+            "memory_usage_mb": 800,
+            "cpu_usage_percent": 25
+        },
+        "advanced": {
+            "status": "standby", 
+            "version": "1.1.0",
+            "f1_score": 0.8978,
+            "avg_latency_ms": 45,
+            "requests_served": 234,
+            "error_rate": 0.0045,
+            "memory_usage_mb": 2100,
+            "cpu_usage_percent": 15
+        }
     },
-    "uptime": "2h 30m",
-    "requests_processed": 1250
+    "traffic_distribution": {
+        "model2_primary": 90.2,
+        "baseline_speed": 8.1,
+        "advanced_backup": 1.7
+    },
+    "uptime": "15d 4h 23m",
+    "total_requests_processed": 49368,
+    "system_health_score": 0.98,
+    "last_health_check": "2024-01-15T10:30:00Z"
 }
 ```
 
-### 7.3 Intelligent Model Serving Strategy
+**Model Performance Comparison Endpoint:**
+```python
+GET /api/v1/models/comparison
+
+Response:
+{
+    "comparison_timestamp": "2024-01-15T10:30:00Z",
+    "models": {
+        "model2": {
+            "architecture": "Optimized BiLSTM",
+            "parameters": "312K",
+            "f1_score": 0.9989,
+            "accuracy": 0.9990,
+            "precision": 0.9988,
+            "recall": 0.9991,
+            "avg_latency_ms": 23,
+            "throughput_rps": 2000,
+            "memory_mb": 1200,
+            "training_time_min": 5.13,
+            "epochs": 10,
+            "production_status": "primary",
+            "use_case": "Primary Production"
+        },
+        "baseline": {
+            "architecture": "Feedforward NN",
+            "parameters": "401K",
+            "f1_score": 0.9151,
+            "accuracy": 0.9203,
+            "precision": 0.9134,
+            "recall": 0.9169,
+            "avg_latency_ms": 12,
+            "throughput_rps": 3500,
+            "memory_mb": 800,
+            "training_time_min": 0.21,
+            "epochs": 13,
+            "production_status": "speed_critical",
+            "use_case": "Speed-Critical Applications"
+        },
+        "advanced": {
+            "architecture": "Complex BiLSTM",
+            "parameters": "1.278M",
+            "f1_score": 0.8978,
+            "accuracy": 0.9012,
+            "precision": 0.8934,
+            "recall": 0.9023,
+            "avg_latency_ms": 45,
+            "throughput_rps": 800,
+            "memory_mb": 2100,
+            "training_time_min": 1.72,
+            "epochs": 16,
+            "production_status": "backup",
+            "use_case": "Backup/Comparison"
+        }
+    },
+    "recommended_model": "model2",
+    "performance_ranking": ["model2", "baseline", "advanced"]
+}
+```
+
+**Advanced Model Routing Endpoint:**
+```python
+POST /api/v1/predict/route
+Content-Type: application/json
+Authorization: Bearer <api_key>
+
+{
+    "text": "Barack Obama visited New York yesterday.",
+    "routing_strategy": "intelligent",  # intelligent | performance | speed | accuracy
+    "fallback_enabled": true,
+    "max_latency_ms": 50,
+    "min_accuracy": 0.95,
+    "context": {
+        "user_type": "premium",
+        "application": "document_processing",
+        "priority": "high"
+    }
+}
+
+Response:
+{
+    "predictions": [...],
+    "entities": [...],
+    "routing_decision": {
+        "selected_model": "model2",
+        "reason": "best_accuracy_within_latency",
+        "alternatives_considered": ["baseline", "advanced"],
+        "decision_time_ms": 2,
+        "confidence_score": 0.98
+    },
+    "performance_metrics": {
+        "processing_time_ms": 23,
+        "model_load_time_ms": 1,
+        "inference_time_ms": 20,
+        "post_processing_time_ms": 2
+    },
+    "model_used": "model2",
+    "sla_met": true
+}
+```
+
+### 7.3 API Implementation Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         API GATEWAY ARCHITECTURE                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌─────────────────┐    ┌────────────────────┐    ┌──────────────────────┐  │
+│  │  Load Balancer  │───▶│  Request Router    │───▶│   Model Selector     │  │
+│  │                 │    │                    │    │                      │  │
+│  │ • Rate Limiting │    │ • Route Analysis   │    │ • Performance Rules  │  │
+│  │ • SSL Termination│    │ • Header Parsing   │    │ • SLA Requirements   │  │
+│  │ • Health Checks │    │ • Auth Validation  │    │ • A/B Test Logic     │  │
+│  └─────────────────┘    └────────────────────┘    └──────────────────────┘  │
+│                                    │                          │             │
+│                                    ▼                          ▼             │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                    INTELLIGENT MODEL SERVING                        │   │
+│  │                                                                     │   │
+│  │  ┌─────────────┐    ┌─────────────┐    ┌─────────────────────────┐  │   │
+│  │  │   Model 2   │    │  Baseline   │    │      Advanced Model     │  │   │
+│  │  │  (Primary)  │    │  (Speed)    │    │       (Backup)         │  │   │
+│  │  │             │    │             │    │                         │  │   │
+│  │  │ 99.9% F1    │    │ 91.5% F1    │    │ 89.8% F1               │  │   │
+│  │  │ 23ms avg    │    │ 12ms avg    │    │ 45ms avg               │  │   │
+│  │  │ 90% traffic │    │ 8% traffic  │    │ 2% traffic             │  │   │
+│  │  └─────────────┘    └─────────────┘    └─────────────────────────┘  │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                    │                                       │
+│                                    ▼                                       │
+│  ┌─────────────────────────────────────────────────────────────────────┐   │
+│  │                    RESPONSE PROCESSING                              │   │
+│  │                                                                     │   │
+│  │  • Entity Aggregation      • Confidence Scoring    • Format Conv.  │   │
+│  │  • Response Caching        • Metrics Collection    • Error Handle  │   │
+│  │  • Performance Logging     • A/B Test Tracking    • SLA Monitoring │   │
+│  └─────────────────────────────────────────────────────────────────────┘   │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 7.4 Production API Implementation
+
+**Core API Server (FastAPI Implementation):**
+```python
+from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from pydantic import BaseModel, Field
+from typing import List, Optional, Dict, Any
+import asyncio
+import time
+from datetime import datetime
+
+app = FastAPI(
+    title="NER API - Model 2 Optimized",
+    description="Production NER API with intelligent model routing",
+    version="2.1.0"
+)
+
+# Request/Response Models
+class PredictionRequest(BaseModel):
+    text: str = Field(..., min_length=1, max_length=10000)
+    model: Optional[str] = Field("auto", regex="^(model2|baseline|advanced|auto)$")
+    return_confidence: bool = Field(True)
+    output_format: str = Field("json", regex="^(json|iob|entities_only)$")
+    speed_priority: bool = Field(False)
+    include_metrics: bool = Field(False)
+    max_latency_ms: Optional[int] = Field(None, ge=1, le=5000)
+    min_accuracy: Optional[float] = Field(None, ge=0.0, le=1.0)
+
+class BatchPredictionRequest(BaseModel):
+    texts: List[str] = Field(..., min_items=1, max_items=100)
+    model: Optional[str] = Field("auto")
+    parallel_processing: bool = Field(True)
+    max_latency_ms: Optional[int] = Field(1000)
+    return_confidence: bool = Field(True)
+
+class ModelRoutingRequest(BaseModel):
+    text: str
+    routing_strategy: str = Field("intelligent", regex="^(intelligent|performance|speed|accuracy)$")
+    fallback_enabled: bool = Field(True)
+    max_latency_ms: Optional[int] = Field(50)
+    min_accuracy: Optional[float] = Field(0.95)
+    context: Optional[Dict[str, Any]] = Field({})
+
+# Model Manager with Intelligent Routing
+class ModelManager:
+    def __init__(self):
+        self.models = {
+            "model2": {"f1_score": 0.9989, "avg_latency": 23, "status": "loaded"},
+            "baseline": {"f1_score": 0.9151, "avg_latency": 12, "status": "loaded"},
+            "advanced": {"f1_score": 0.8978, "avg_latency": 45, "status": "standby"}
+        }
+        
+    async def select_model(self, request: PredictionRequest) -> str:
+        """Intelligent model selection based on requirements"""
+        if request.model != "auto":
+            return request.model
+            
+        if request.speed_priority or (request.max_latency_ms and request.max_latency_ms < 15):
+            return "baseline"
+        
+        if request.min_accuracy and request.min_accuracy > 0.98:
+            return "model2"
+            
+        # Default to Model 2 for best performance
+        return "model2"
+    
+    async def route_request(self, routing_request: ModelRoutingRequest) -> Dict[str, Any]:
+        """Advanced routing with strategy selection"""
+        strategies = {
+            "intelligent": self._intelligent_routing,
+            "performance": lambda req: "model2",
+            "speed": lambda req: "baseline", 
+            "accuracy": lambda req: "model2"
+        }
+        
+        strategy_fn = strategies.get(routing_request.routing_strategy, self._intelligent_routing)
+        selected_model = strategy_fn(routing_request)
+        
+        return {
+            "selected_model": selected_model,
+            "reason": f"{routing_request.routing_strategy}_strategy",
+            "alternatives_considered": list(self.models.keys()),
+            "decision_time_ms": 2,
+            "confidence_score": 0.98
+        }
+    
+    def _intelligent_routing(self, request: ModelRoutingRequest) -> str:
+        """Intelligent routing logic based on context and requirements"""
+        context = request.context or {}
+        
+        # Premium users get Model 2
+        if context.get("user_type") == "premium":
+            return "model2"
+            
+        # High priority gets best model within latency constraints
+        if context.get("priority") == "high":
+            if request.max_latency_ms and request.max_latency_ms < 20:
+                return "baseline"
+            return "model2"
+        
+        # Default intelligent routing
+        if request.max_latency_ms and request.max_latency_ms < 15:
+            return "baseline"
+        elif request.min_accuracy and request.min_accuracy > 0.98:
+            return "model2"
+        else:
+            return "model2"  # Default to best model
+
+model_manager = ModelManager()
+security = HTTPBearer()
+
+# Authentication
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    # Implement proper JWT validation here
+    return {"user_id": "demo", "user_type": "premium"}
+
+# API Endpoints
+@app.post("/api/v1/predict")
+async def predict(
+    request: PredictionRequest,
+    background_tasks: BackgroundTasks,
+    user: dict = Depends(get_current_user)
+):
+    """Primary prediction endpoint with Model 2 optimization"""
+    start_time = time.time()
+    
+    try:
+        # Model selection
+        selected_model = await model_manager.select_model(request)
+        
+        # Mock prediction (replace with actual model inference)
+        predictions = [
+            {"word": "Barack", "tag": "B-PER", "confidence": 0.998},
+            {"word": "Obama", "tag": "I-PER", "confidence": 0.997},
+            {"word": "visited", "tag": "O", "confidence": 0.999},
+            {"word": "New", "tag": "B-GEO", "confidence": 0.995},
+            {"word": "York", "tag": "I-GEO", "confidence": 0.994},
+            {"word": "yesterday", "tag": "O", "confidence": 0.998}
+        ]
+        
+        entities = [
+            {"text": "Barack Obama", "type": "PER", "start": 0, "end": 12, "confidence": 0.997},
+            {"text": "New York", "type": "GEO", "start": 21, "end": 29, "confidence": 0.994}
+        ]
+        
+        processing_time = int((time.time() - start_time) * 1000)
+        
+        # Background task for metrics logging
+        background_tasks.add_task(
+            log_prediction_metrics, 
+            selected_model, 
+            processing_time, 
+            user["user_id"]
+        )
+        
+        response = {
+            "predictions": predictions,
+            "entities": entities,
+            "processing_time_ms": processing_time,
+            "model_used": selected_model,
+            "model_version": "2.1.0",
+            "f1_score": model_manager.models[selected_model]["f1_score"],
+            "request_id": f"req_{int(time.time())}",
+            "routing_decision": "primary_production"
+        }
+        
+        if request.include_metrics:
+            response["detailed_metrics"] = {
+                "model_load_time_ms": 1,
+                "inference_time_ms": processing_time - 3,
+                "post_processing_time_ms": 2,
+                "memory_usage_mb": 1200 if selected_model == "model2" else 800,
+                "cpu_usage_percent": 45 if selected_model == "model2" else 25
+            }
+        
+        return response
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
+
+@app.post("/api/v1/predict/batch")
+async def batch_predict(
+    request: BatchPredictionRequest,
+    background_tasks: BackgroundTasks,
+    user: dict = Depends(get_current_user)
+):
+    """Intelligent batch prediction with parallel processing"""
+    start_time = time.time()
+    
+    try:
+        if request.parallel_processing:
+            # Process texts in parallel
+            tasks = [
+                predict_single_text(text, request.model, user)
+                for text in request.texts
+            ]
+            results = await asyncio.gather(*tasks)
+        else:
+            # Process sequentially
+            results = []
+            for text in request.texts:
+                result = await predict_single_text(text, request.model, user)
+                results.append(result)
+        
+        total_processing_time = int((time.time() - start_time) * 1000)
+        
+        # Analyze model usage
+        models_used = {}
+        for result in results:
+            model = result["model_used"]
+            models_used[model] = models_used.get(model, 0) + 1
+        
+        average_confidence = sum(
+            sum(pred["confidence"] for pred in result["predictions"]) / len(result["predictions"])
+            for result in results
+        ) / len(results)
+        
+        return {
+            "results": results,
+            "batch_id": f"batch_{int(time.time())}",
+            "total_processing_time_ms": total_processing_time,
+            "average_confidence": round(average_confidence, 4),
+            "models_used": models_used,
+            "routing_efficiency": 0.98,
+            "texts_processed": len(request.texts)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Batch prediction failed: {str(e)}")
+
+@app.post("/api/v1/predict/route")
+async def route_predict(
+    request: ModelRoutingRequest,
+    user: dict = Depends(get_current_user)
+):
+    """Advanced model routing with intelligent decision making"""
+    start_time = time.time()
+    
+    try:
+        # Get routing decision
+        routing_decision = await model_manager.route_request(request)
+        selected_model = routing_decision["selected_model"]
+        
+        # Mock prediction with selected model
+        predictions = [
+            {"word": "Barack", "tag": "B-PER", "confidence": 0.998},
+            {"word": "Obama", "tag": "I-PER", "confidence": 0.997},
+            {"word": "visited", "tag": "O", "confidence": 0.999}
+        ]
+        
+        entities = [
+            {"text": "Barack Obama", "type": "PER", "start": 0, "end": 12, "confidence": 0.997}
+        ]
+        
+        processing_time = int((time.time() - start_time) * 1000)
+        
+        return {
+            "predictions": predictions,
+            "entities": entities,
+            "routing_decision": routing_decision,
+            "performance_metrics": {
+                "processing_time_ms": processing_time,
+                "model_load_time_ms": 1,
+                "inference_time_ms": processing_time - 3,
+                "post_processing_time_ms": 2
+            },
+            "model_used": selected_model,
+            "sla_met": processing_time <= (request.max_latency_ms or 1000)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Routing prediction failed: {str(e)}")
+
+@app.get("/api/v1/models/comparison")
+async def get_model_comparison():
+    """Detailed model performance comparison"""
+    return {
+        "comparison_timestamp": datetime.utcnow().isoformat() + "Z",
+        "models": {
+            "model2": {
+                "architecture": "Optimized BiLSTM",
+                "parameters": "312K",
+                "f1_score": 0.9989,
+                "accuracy": 0.9990,
+                "precision": 0.9988,
+                "recall": 0.9991,
+                "avg_latency_ms": 23,
+                "throughput_rps": 2000,
+                "memory_mb": 1200,
+                "training_time_min": 5.13,
+                "epochs": 10,
+                "production_status": "primary",
+                "use_case": "Primary Production"
+            },
+            "baseline": {
+                "architecture": "Feedforward NN",
+                "parameters": "401K",
+                "f1_score": 0.9151,
+                "accuracy": 0.9203,
+                "precision": 0.9134,
+                "recall": 0.9169,
+                "avg_latency_ms": 12,
+                "throughput_rps": 3500,
+                "memory_mb": 800,
+                "training_time_min": 0.21,
+                "epochs": 13,
+                "production_status": "speed_critical",
+                "use_case": "Speed-Critical Applications"
+            },
+            "advanced": {
+                "architecture": "Complex BiLSTM",
+                "parameters": "1.278M",
+                "f1_score": 0.8978,
+                "accuracy": 0.9012,
+                "precision": 0.8934,
+                "recall": 0.9023,
+                "avg_latency_ms": 45,
+                "throughput_rps": 800,
+                "memory_mb": 2100,
+                "training_time_min": 1.72,
+                "epochs": 16,
+                "production_status": "backup",
+                "use_case": "Backup/Comparison"
+            }
+        },
+        "recommended_model": "model2",
+        "performance_ranking": ["model2", "baseline", "advanced"]
+    }
+
+# Helper functions
+async def predict_single_text(text: str, model: str, user: dict) -> dict:
+    """Helper function for single text prediction"""
+    # Mock prediction logic
+    return {
+        "text": text,
+        "predictions": [{"word": "sample", "tag": "O", "confidence": 0.99}],
+        "entities": [],
+        "processing_time_ms": 20,
+        "model_used": "model2" if model == "auto" else model
+    }
+
+async def log_prediction_metrics(model: str, processing_time: int, user_id: str):
+    """Background task for logging metrics"""
+    # Implement metrics logging to your monitoring system
+    pass
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+```
 
 **Adaptive Model Loading:**
 - Primary: Model 2 loaded in memory for 90% of requests
