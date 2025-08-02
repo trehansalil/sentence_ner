@@ -123,7 +123,6 @@ def main():
     
     print("\n" + "=" * 50)
     print("Model 2 NER implementation completed successfully!")
-    print("This implementation matches the Model 2 from NER_Prediction_Final.ipynb")
 
 
 if __name__ == "__main__":
