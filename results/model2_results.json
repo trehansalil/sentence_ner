@@ -1,0 +1,189 @@
+{
+  "model_info": {
+    "model_type": "model2_ner",
+    "architecture": "bidirectional_lstm_simple",
+    "embedding_dim": 50,
+    "lstm_units": 100,
+    "recurrent_dropout": 0.1,
+    "total_parameters": 312559,
+    "training_time_seconds": 308.027643
+  },
+  "training_results": {
+    "final_train_loss": 0.001741065876558423,
+    "final_train_accuracy": 0.9993915557861328,
+    "final_val_loss": 0.003276347415521741,
+    "final_val_accuracy": 0.9989240765571594,
+    "best_val_loss": 0.0031964671798050404,
+    "best_val_accuracy": 0.9989240765571594,
+    "epochs_trained": 10
+  },
+  "evaluation_results": {
+    "token_level": {
+      "accuracy": 0.9990172365860439,
+      "precision": 0.998968424354208,
+      "recall": 0.9990172365860439,
+      "f1_score": 0.9989519837995241
+    },
+    "sequence_level": {
+      "sequence_accuracy": 0.9262927439532944,
+      "exact_matches": 8885,
+      "total_sequences": 9592
+    },
+    "entity_level": {
+      "precision": 1.0,
+      "recall": 0.7142857142857143,
+      "f1_score": 0.8333333333333333,
+      "true_positives": 5,
+      "false_positives": 0,
+      "false_negatives": 2
+    },
+    "per_tag": {
+      "B-art": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "support": 3
+      },
+      "B-eve": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "support": 0
+      },
+      "B-geo": {
+        "precision": 0.7516425755584757,
+        "recall": 0.8640483383685801,
+        "f1_score": 0.8039353478566409,
+        "support": 662
+      },
+      "B-gpe": {
+        "precision": 0.9586919104991394,
+        "recall": 0.9071661237785016,
+        "f1_score": 0.9322175732217574,
+        "support": 614
+      },
+      "B-nat": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "support": 3
+      },
+      "B-org": {
+        "precision": 0.8135048231511254,
+        "recall": 0.4755639097744361,
+        "f1_score": 0.6002372479240806,
+        "support": 532
+      },
+      "B-per": {
+        "precision": 0.8677918424753868,
+        "recall": 0.7800252844500632,
+        "f1_score": 0.8215712383488681,
+        "support": 791
+      },
+      "B-tim": {
+        "precision": 0.9647058823529412,
+        "recall": 0.7884615384615384,
+        "f1_score": 0.8677248677248677,
+        "support": 104
+      },
+      "O": {
+        "precision": 0.9995271643389855,
+        "recall": 0.9998897711845133,
+        "f1_score": 0.9997084348812325,
+        "support": 716691
+      }
+    },
+    "confusion_matrix": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3
+      ],
+      [
+        0,
+        572,
+        13,
+        0,
+        31,
+        19,
+        0,
+        27
+      ],
+      [
+        0,
+        38,
+        557,
+        0,
+        5,
+        3,
+        0,
+        11
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        0,
+        1
+      ],
+      [
+        0,
+        127,
+        4,
+        0,
+        253,
+        27,
+        0,
+        121
+      ],
+      [
+        0,
+        6,
+        2,
+        0,
+        9,
+        617,
+        0,
+        157
+      ],
+      [
+        0,
+        1,
+        0,
+        0,
+        0,
+        2,
+        82,
+        19
+      ],
+      [
+        0,
+        17,
+        5,
+        0,
+        13,
+        41,
+        3,
+        716612
+      ]
+    ]
+  },
+  "comparison_with_advanced": {
+    "parameter_reduction_percent": 75.55690412529394,
+    "accuracy_difference": 0.09628579371698631,
+    "training_time_ratio": 2.984009912843827
+  },
+  "metadata": {
+    "timestamp": "2025-08-02T10:21:02.277206",
+    "notebook_source": "NER_Prediction_Final.ipynb Model 2",
+    "encoding_type": "categorical"
+  }
+}

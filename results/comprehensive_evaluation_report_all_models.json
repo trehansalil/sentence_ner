@@ -1,0 +1,385 @@
+{
+  "report_metadata": {
+    "generated_at": "2025-08-02T10:59:04.101425",
+    "test_set_size": 9592,
+    "vocabulary_size": 3799,
+    "num_tags": 9,
+    "models_compared": [
+      "baseline",
+      "advanced",
+      "model2"
+    ]
+  },
+  "model_comparison": {
+    "baseline": {
+      "architecture": "feedforward_with_embeddings",
+      "parameters": 401669,
+      "training_time_minutes": 0.21281758333333334,
+      "epochs": 13,
+      "performance": {
+        "token_level": {
+          "accuracy": 0.9164929107589658,
+          "precision": 0.9211431291383753,
+          "recall": 0.9164929107589658,
+          "f1_score": 0.9151043412950203
+        },
+        "sequence_level": {
+          "sequence_accuracy": 0.9164929107589658,
+          "exact_matches": 8791,
+          "total_sequences": 9592
+        },
+        "entity_level": {
+          "precision": 1.0,
+          "recall": 0.7142857142857143,
+          "f1_score": 0.8333333333333333,
+          "true_positives": 5,
+          "false_positives": 0,
+          "false_negatives": 2
+        }
+      }
+    },
+    "advanced": {
+      "architecture": "bidirectional_lstm_with_attention",
+      "parameters": 1278721,
+      "training_time_minutes": 1.72043465,
+      "epochs": 16,
+      "performance": {
+        "token_level": {
+          "accuracy": 0.9027314428690576,
+          "precision": 0.9085031510405563,
+          "recall": 0.9027314428690576,
+          "f1_score": 0.8978582739121862
+        },
+        "sequence_level": {
+          "sequence_accuracy": 0.9027314428690576,
+          "exact_matches": 8659,
+          "total_sequences": 9592
+        },
+        "entity_level": {
+          "precision": 1.0,
+          "recall": 0.7142857142857143,
+          "f1_score": 0.8333333333333333,
+          "true_positives": 5,
+          "false_positives": 0,
+          "false_negatives": 2
+        }
+      }
+    },
+    "model2": {
+      "architecture": "bidirectional_lstm_simple",
+      "parameters": 312559,
+      "training_time_minutes": 5.1337940500000006,
+      "epochs": 10,
+      "performance": {
+        "token_level": {
+          "accuracy": 0.9990172365860439,
+          "precision": 0.998968424354208,
+          "recall": 0.9990172365860439,
+          "f1_score": 0.9989519837995241
+        },
+        "sequence_level": {
+          "sequence_accuracy": 0.9262927439532944,
+          "exact_matches": 8885,
+          "total_sequences": 9592
+        },
+        "entity_level": {
+          "precision": 1.0,
+          "recall": 0.7142857142857143,
+          "f1_score": 0.8333333333333333,
+          "true_positives": 5,
+          "false_positives": 0,
+          "false_negatives": 2
+        },
+        "per_tag": {
+          "B-art": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "support": 3
+          },
+          "B-eve": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "support": 0
+          },
+          "B-geo": {
+            "precision": 0.7516425755584757,
+            "recall": 0.8640483383685801,
+            "f1_score": 0.8039353478566409,
+            "support": 662
+          },
+          "B-gpe": {
+            "precision": 0.9586919104991394,
+            "recall": 0.9071661237785016,
+            "f1_score": 0.9322175732217574,
+            "support": 614
+          },
+          "B-nat": {
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1_score": 0.0,
+            "support": 3
+          },
+          "B-org": {
+            "precision": 0.8135048231511254,
+            "recall": 0.4755639097744361,
+            "f1_score": 0.6002372479240806,
+            "support": 532
+          },
+          "B-per": {
+            "precision": 0.8677918424753868,
+            "recall": 0.7800252844500632,
+            "f1_score": 0.8215712383488681,
+            "support": 791
+          },
+          "B-tim": {
+            "precision": 0.9647058823529412,
+            "recall": 0.7884615384615384,
+            "f1_score": 0.8677248677248677,
+            "support": 104
+          },
+          "O": {
+            "precision": 0.9995271643389855,
+            "recall": 0.9998897711845133,
+            "f1_score": 0.9997084348812325,
+            "support": 716691
+          }
+        },
+        "confusion_matrix": [
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            3
+          ],
+          [
+            0,
+            572,
+            13,
+            0,
+            31,
+            19,
+            0,
+            27
+          ],
+          [
+            0,
+            38,
+            557,
+            0,
+            5,
+            3,
+            0,
+            11
+          ],
+          [
+            0,
+            0,
+            0,
+            0,
+            0,
+            2,
+            0,
+            1
+          ],
+          [
+            0,
+            127,
+            4,
+            0,
+            253,
+            27,
+            0,
+            121
+          ],
+          [
+            0,
+            6,
+            2,
+            0,
+            9,
+            617,
+            0,
+            157
+          ],
+          [
+            0,
+            1,
+            0,
+            0,
+            0,
+            2,
+            82,
+            19
+          ],
+          [
+            0,
+            17,
+            5,
+            0,
+            13,
+            41,
+            3,
+            716612
+          ]
+        ]
+      }
+    }
+  },
+  "performance_improvements": {
+    "advanced_vs_baseline": {
+      "token_accuracy": -1.3761467889908174,
+      "token_f1": -1.7246067382834074,
+      "sequence_accuracy": -1.3761467889908174,
+      "entity_f1": 0.0
+    },
+    "model2_vs_baseline": {
+      "token_accuracy": 8.252432582707813,
+      "token_f1": 8.384764250450383,
+      "sequence_accuracy": 0.9799833194328644,
+      "entity_f1": 0.0
+    }
+  },
+  "error_analysis": {
+    "baseline_total_errors": 798,
+    "advanced_total_errors": 930,
+    "model2_total_errors": 707
+  },
+  "per_tag_analysis": [
+    {
+      "Tag": "O",
+      "Baseline F1": 0.9681045179184001,
+      "Baseline Support": 6883,
+      "Advanced F1": 0.9690316952602501,
+      "Advanced Support": 6883,
+      "Model 2 F1": 0.9997084348812325,
+      "Model 2 Support": 716691,
+      "Advanced vs Baseline (%)": 0.0927177341849994,
+      "Model 2 vs Baseline (%)": 3.160391696283238
+    },
+    {
+      "Tag": "B-geo",
+      "Baseline F1": 0.7988980716253443,
+      "Baseline Support": 662,
+      "Advanced F1": 0.784394250513347,
+      "Advanced Support": 662,
+      "Model 2 F1": 0.8039353478566409,
+      "Model 2 Support": 662,
+      "Advanced vs Baseline (%)": -1.4503821111997328,
+      "Model 2 vs Baseline (%)": 0.5037276231296572
+    },
+    {
+      "Tag": "B-tim",
+      "Baseline F1": 0.8736842105263158,
+      "Baseline Support": 104,
+      "Advanced F1": 0.8541666666666666,
+      "Advanced Support": 104,
+      "Model 2 F1": 0.8677248677248677,
+      "Model 2 Support": 104,
+      "Advanced vs Baseline (%)": -1.9517543859649211,
+      "Model 2 vs Baseline (%)": -0.5959342801448164
+    },
+    {
+      "Tag": "B-gpe",
+      "Baseline F1": 0.9312977099236641,
+      "Baseline Support": 614,
+      "Advanced F1": 0.8776371308016878,
+      "Advanced Support": 614,
+      "Model 2 F1": 0.9322175732217574,
+      "Model 2 Support": 614,
+      "Advanced vs Baseline (%)": -5.366057912197631,
+      "Model 2 vs Baseline (%)": 0.09198632980932375
+    },
+    {
+      "Tag": "B-per",
+      "Baseline F1": 0.7753743760399334,
+      "Baseline Support": 791,
+      "Advanced F1": 0.713589604764483,
+      "Advanced Support": 791,
+      "Model 2 F1": 0.8215712383488681,
+      "Model 2 Support": 791,
+      "Advanced vs Baseline (%)": -6.178477127545046,
+      "Model 2 vs Baseline (%)": 4.619686230893471
+    },
+    {
+      "Tag": "B-org",
+      "Baseline F1": 0.5814771395076201,
+      "Baseline Support": 532,
+      "Advanced F1": 0.43419267299864317,
+      "Advanced Support": 532,
+      "Model 2 F1": 0.6002372479240806,
+      "Model 2 Support": 532,
+      "Advanced vs Baseline (%)": -14.728446650897698,
+      "Model 2 vs Baseline (%)": 1.8760108416460475
+    },
+    {
+      "Tag": "B-art",
+      "Baseline F1": 0.0,
+      "Baseline Support": 3,
+      "Advanced F1": 0.0,
+      "Advanced Support": 3,
+      "Model 2 F1": 0.0,
+      "Model 2 Support": 3,
+      "Advanced vs Baseline (%)": NaN,
+      "Model 2 vs Baseline (%)": NaN
+    },
+    {
+      "Tag": "B-eve",
+      "Baseline F1": 0.0,
+      "Baseline Support": 0,
+      "Advanced F1": 0.0,
+      "Advanced Support": 0,
+      "Model 2 F1": 0.0,
+      "Model 2 Support": 0,
+      "Advanced vs Baseline (%)": NaN,
+      "Model 2 vs Baseline (%)": NaN
+    },
+    {
+      "Tag": "B-nat",
+      "Baseline F1": 0.0,
+      "Baseline Support": 3,
+      "Advanced F1": 0.0,
+      "Advanced Support": 3,
+      "Model 2 F1": 0.0,
+      "Model 2 Support": 3,
+      "Advanced vs Baseline (%)": NaN,
+      "Model 2 vs Baseline (%)": NaN
+    }
+  ],
+  "training_efficiency": {
+    "advanced_vs_baseline": {
+      "parameter_ratio": 3.1835192658631857,
+      "time_ratio": 8.084081320035038,
+      "performance_per_parameter": {
+        "baseline": 2.278254834938769e-06,
+        "advanced": 7.021533813178842e-07
+      }
+    },
+    "model2_vs_baseline": {
+      "parameter_ratio": 0.7781506663446769,
+      "time_ratio": 24.122978795220167,
+      "performance_per_parameter": {
+        "baseline": 2.278254834938769e-06,
+        "model2": 3.1960429352523014e-06
+      }
+    }
+  },
+  "recommendations": {
+    "best_overall_model": "Baseline",
+    "best_for_speed": "Baseline",
+    "best_for_accuracy": "Baseline",
+    "improvement_areas": [
+      "Consider using pre-trained embeddings (Word2Vec, GloVe)",
+      "Implement CRF layer for better sequence consistency",
+      "Add attention mechanism to focus on important words",
+      "Use transformer-based models (BERT, RoBERTa) for state-of-the-art performance",
+      "Implement data augmentation techniques",
+      "Fine-tune hyperparameters using grid search or Bayesian optimization"
+    ]
+  }
+}
