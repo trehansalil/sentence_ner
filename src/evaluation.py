@@ -26,8 +26,18 @@ class NERModelEvaluator:
         Args:
             id_to_tag (Dict[int, str]): Mapping from tag IDs to tag names
         """
-        self.id_to_tag = id_to_tag
-        self.tag_to_id = {tag: idx for idx, tag in id_to_tag.items()}
+        # Handle both string and integer keys by converting to integers
+        if isinstance(id_to_tag, dict) and id_to_tag:
+            first_key = next(iter(id_to_tag))
+            if isinstance(first_key, str):
+                # Convert string keys to integers
+                self.id_to_tag = {int(k): v for k, v in id_to_tag.items()}
+            else:
+                self.id_to_tag = id_to_tag
+        else:
+            self.id_to_tag = id_to_tag
+            
+        self.tag_to_id = {tag: idx for idx, tag in self.id_to_tag.items()}
         
     def evaluate_model(self, y_true: np.ndarray, y_pred: np.ndarray, 
                       X_test: np.ndarray = None) -> Dict[str, Any]:

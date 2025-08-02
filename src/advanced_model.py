@@ -56,6 +56,7 @@ class Model2NER:
         self.lstm_units = lstm_units
         self.recurrent_dropout = recurrent_dropout
         self.model = None
+        self.build_model()
         self.history = None
         
     def build_model(self) -> Model:
