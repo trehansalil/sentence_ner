@@ -613,7 +613,7 @@ Challenging Multi-word Entities:
 - What's the performance on domain-specific text?
 
 ### Contact Information
-📧 **Email**: ner-team@company.com  
+📧 **Email**: trehansalil1@gmail.com  
 🐙 **GitHub**: https://github.com/trehansalil/sentence_ner  
 📚 **Documentation**: [Link to docs]  
 🌐 **Demo**: [Link to live demo]  
