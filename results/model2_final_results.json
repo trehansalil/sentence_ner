@@ -1,0 +1,20 @@
+{
+  "final_train_loss": 0.0017682573525235057,
+  "final_train_accuracy": 0.9994025230407715,
+  "final_val_loss": 0.0033061932772397995,
+  "final_val_accuracy": 0.9989420175552368,
+  "best_val_loss": 0.003255553310737014,
+  "best_val_accuracy": 0.9989430904388428,
+  "epochs_trained": 10,
+  "test_loss": 0.003077345434576273,
+  "test_accuracy": 0.9990267157554626,
+  "model_type": "Model2NER",
+  "model_parameters": {
+    "vocab_size": 3799,
+    "num_tags": 9,
+    "max_sequence_length": 75,
+    "embedding_dim": 50,
+    "lstm_units": 100,
+    "recurrent_dropout": 0.1
+  }
+}
