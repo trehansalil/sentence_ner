@@ -14,7 +14,7 @@
       "batch_size": 32,
       "patience": 15
     },
-    "training_time_seconds": 97.272461,
+    "training_time_seconds": 103.226079,
     "total_parameters": 1278721
   },
   "training_results": {
@@ -123,7 +123,7 @@
     }
   },
   "metadata": {
-    "timestamp": "2025-07-27T16:25:00.141313",
+    "timestamp": "2025-08-02T09:50:46.084210",
     "data_splits": {
       "train_size": 28776,
       "val_size": 9592,

@@ -7,14 +7,34 @@ import numpy as np
 from typing import List, Tuple, Dict, Any
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.utils import to_categorical
 import pickle
 import os
-from .utils import (
-    get_unique_tags, 
-    create_tag_to_id_mapping, 
-    create_id_to_tag_mapping,
-    save_results
-)
+
+# Try relative import first, fallback to absolute import
+try:
+    from .utils import (
+        get_unique_tags, 
+        create_tag_to_id_mapping, 
+        create_id_to_tag_mapping,
+        save_results
+    )
+except ImportError:
+    # For standalone execution, use simplified implementations
+    def get_unique_tags(tags):
+        return list(set(tags))
+    
+    def create_tag_to_id_mapping(tags):
+        return {tag: idx for idx, tag in enumerate(tags)}
+    
+    def create_id_to_tag_mapping(tag_to_id):
+        return {idx: tag for tag, idx in tag_to_id.items()}
+    
+    def save_results(results, path):
+        import json
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'w') as f:
+            json.dump(results, f, indent=2)
 
 
 class NERDataProcessor:
@@ -102,12 +122,14 @@ class NERDataProcessor:
         self.id_to_tag = create_id_to_tag_mapping(self.tag_to_id)
         self.num_tags = len(unique_tags)
     
-    def encode_sequences(self, sentences: List[Tuple[List[str], List[str]]]) -> Tuple[np.ndarray, np.ndarray]:
+    def encode_sequences(self, sentences: List[Tuple[List[str], List[str]]], 
+                        categorical_tags: bool = True) -> Tuple[np.ndarray, np.ndarray]:
         """
         Encode words and tags to numerical sequences.
         
         Args:
             sentences: List of (words, tags) tuples
+            categorical_tags: Whether to convert tags to categorical (one-hot) format
             
         Returns:
             Tuple[np.ndarray, np.ndarray]: Encoded word sequences and tag sequences
@@ -136,6 +158,10 @@ class NERDataProcessor:
             padding='post', 
             value=self.tag_to_id['O']  # Pad with 'O' tag
         )
+        
+        # Convert tags to categorical format for Model 2 compatibility
+        if categorical_tags:
+            tag_sequences = to_categorical(tag_sequences, num_classes=self.num_tags)
         
         return word_sequences, tag_sequences
     
@@ -170,12 +196,13 @@ class NERDataProcessor:
         
         return X_train, X_val, X_test, y_train, y_val, y_test
     
-    def process_data(self, file_path: str) -> Dict[str, Any]:
+    def process_data(self, file_path: str, categorical_tags: bool = True) -> Dict[str, Any]:
         """
         Complete data processing pipeline.
         
         Args:
             file_path (str): Path to the dataset file
+            categorical_tags (bool): Whether to use categorical encoding for tags
             
         Returns:
             Dict[str, Any]: Processed data splits and metadata
@@ -190,7 +217,7 @@ class NERDataProcessor:
         self.build_vocabularies(sentences)
         
         # Encode sequences
-        X, y = self.encode_sequences(sentences)
+        X, y = self.encode_sequences(sentences, categorical_tags=categorical_tags)
         
         # Split data
         X_train, X_val, X_test, y_train, y_val, y_test = self.split_data(X, y)
@@ -206,7 +233,8 @@ class NERDataProcessor:
             'train_size': len(X_train),
             'val_size': len(X_val),
             'test_size': len(X_test),
-            'total_sentences': len(sentences)
+            'total_sentences': len(sentences),
+            'categorical_tags': categorical_tags
         }
         
         return {

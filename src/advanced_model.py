@@ -1,10 +1,10 @@
 """
-Advanced NER model implementation using BiLSTM with attention mechanism.
+Advanced NER model implementation using BiLSTM - Model 2 from notebook.
 """
 
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.models import Model
+from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.layers import (
     Input, Embedding, LSTM, Bidirectional, Dense, Dropout,
     TimeDistributed, Attention, MultiHeadAttention,
@@ -14,10 +14,304 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from typing import Dict, Any, Tuple, List
 import matplotlib.pyplot as plt
-from .utils import save_model, save_results
 import os
 
+# Try relative import first, fallback to absolute import
+try:
+    from .utils import save_model, save_results
+except ImportError:
+    # For standalone execution, use simplified implementations
+    def save_model(model, path):
+        os.makedirs(os.path.dirname(path) if os.path.dirname(path) else '.', exist_ok=True)
+        model.save(path)
+    
+    def save_results(results, path):
+        import json
+        os.makedirs(os.path.dirname(path) if os.path.dirname(path) else '.', exist_ok=True)
+        with open(path, 'w') as f:
+            json.dump(results, f, indent=2)
 
+
+class Model2NER:
+    """Model 2 NER implementation matching the notebook architecture."""
+    
+    def __init__(self, vocab_size: int, num_tags: int, max_sequence_length: int,
+                 embedding_dim: int = 50, lstm_units: int = 100, 
+                 recurrent_dropout: float = 0.1):
+        """
+        Initialize Model 2 based on the notebook.
+        
+        Args:
+            vocab_size (int): Size of vocabulary
+            num_tags (int): Number of NER tags
+            max_sequence_length (int): Maximum sequence length
+            embedding_dim (int): Embedding dimension (50 as in notebook)
+            lstm_units (int): LSTM units (100 as in notebook)
+            recurrent_dropout (float): Recurrent dropout rate
+        """
+        self.vocab_size = vocab_size
+        self.num_tags = num_tags
+        self.max_sequence_length = max_sequence_length
+        self.embedding_dim = embedding_dim
+        self.lstm_units = lstm_units
+        self.recurrent_dropout = recurrent_dropout
+        self.model = None
+        self.build_model()
+        self.history = None
+        
+    def build_model(self) -> Model:
+        """
+        Build Model 2 architecture exactly as in the notebook.
+        
+        Returns:
+            Model: Compiled Keras model
+        """
+        model = Sequential()
+        
+        # Embedding layer - exactly as in notebook
+        model.add(Embedding(
+            input_dim=self.vocab_size, 
+            output_dim=self.embedding_dim, 
+            input_length=self.max_sequence_length
+        ))
+        
+        # Bidirectional LSTM layer - exactly as in notebook
+        model.add(Bidirectional(LSTM(
+            units=self.lstm_units, 
+            return_sequences=True, 
+            recurrent_dropout=self.recurrent_dropout
+        )))
+        
+        # TimeDistributed Dense layer with softmax - exactly as in notebook
+        model.add(TimeDistributed(Dense(self.num_tags, activation="softmax")))
+        
+        # Compile with same settings as notebook
+        model.compile(
+            optimizer="adam", 
+            loss="categorical_crossentropy", 
+            metrics=["accuracy"]
+        )
+        
+        self.model = model
+        return model
+    
+    def train(self, X_train: np.ndarray, y_train: np.ndarray,
+              X_val: np.ndarray, y_val: np.ndarray,
+              epochs: int = 10, batch_size: int = 64,
+              verbose: int = 1) -> Dict[str, Any]:
+        """
+        Train Model 2 with exact parameters from notebook.
+        
+        Args:
+            X_train (np.ndarray): Training input sequences
+            y_train (np.ndarray): Training target sequences (categorical)
+            X_val (np.ndarray): Validation input sequences
+            y_val (np.ndarray): Validation target sequences (categorical)
+            epochs (int): Number of training epochs (10 as in notebook)
+            batch_size (int): Batch size (64 as in notebook)
+            verbose (int): Verbosity level
+            
+        Returns:
+            Dict[str, Any]: Training history and metrics
+        """
+        if self.model is None:
+            self.build_model()
+        
+        # Train model with exact parameters from notebook
+        self.history = self.model.fit(
+            X_train, y_train,
+            batch_size=batch_size,
+            epochs=epochs,
+            validation_data=(X_val, y_val),
+            verbose=verbose
+        )
+        
+        # Return training summary
+        return {
+            'final_train_loss': float(self.history.history['loss'][-1]),
+            'final_train_accuracy': float(self.history.history['accuracy'][-1]),
+            'final_val_loss': float(self.history.history['val_loss'][-1]),
+            'final_val_accuracy': float(self.history.history['val_accuracy'][-1]),
+            'best_val_loss': float(min(self.history.history['val_loss'])),
+            'best_val_accuracy': float(max(self.history.history['val_accuracy'])),
+            'epochs_trained': len(self.history.history['loss'])
+        }
+    
+    def predict(self, X: np.ndarray) -> np.ndarray:
+        """
+        Make predictions on input sequences.
+        
+        Args:
+            X (np.ndarray): Input sequences
+            
+        Returns:
+            np.ndarray: Predicted tag sequences
+        """
+        if self.model is None:
+            raise ValueError("Model not built or trained yet.")
+        
+        # Get probabilities
+        probabilities = self.model.predict(X)
+        
+        # Convert to predicted classes
+        predictions = np.argmax(probabilities, axis=-1)
+        
+        return predictions
+    
+    def evaluate(self, X_test: np.ndarray, y_test: np.ndarray) -> Dict[str, float]:
+        """
+        Evaluate the model on test data.
+        
+        Args:
+            X_test (np.ndarray): Test input sequences
+            y_test (np.ndarray): Test target sequences (categorical)
+            
+        Returns:
+            Dict[str, float]: Evaluation metrics
+        """
+        if self.model is None:
+            raise ValueError("Model not built or trained yet.")
+        
+        # Evaluate model
+        test_loss, test_accuracy = self.model.evaluate(X_test, y_test, verbose=0)
+        
+        return {
+            'test_loss': float(test_loss),
+            'test_accuracy': float(test_accuracy)
+        }
+    
+    def plot_training_history(self, save_path: str = None) -> None:
+        """
+        Plot training history exactly as in notebook.
+        
+        Args:
+            save_path (str, optional): Path to save the plot
+        """
+        if self.history is None:
+            raise ValueError("No training history available.")
+        
+        # Plot training and validation accuracy
+        plt.figure(figsize=(12, 4))
+        
+        plt.subplot(1, 2, 1)
+        plt.plot(self.history.history['accuracy'])
+        plt.plot(self.history.history['val_accuracy'])
+        plt.title('Model accuracy')
+        plt.ylabel('Accuracy')
+        plt.xlabel('Epoch')
+        plt.legend(['Train', 'Validation'], loc='upper left')
+        
+        # Plot training and validation loss
+        plt.subplot(1, 2, 2)
+        plt.plot(self.history.history['loss'])
+        plt.plot(self.history.history['val_loss'])
+        plt.title('Model loss')
+        plt.ylabel('Loss')
+        plt.xlabel('Epoch')
+        plt.legend(['Train', 'Validation'], loc='upper left')
+        
+        plt.tight_layout()
+        
+        if save_path:
+            plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        
+        plt.show()
+    
+    def save_model(self, filepath: str) -> None:
+        """
+        Save the trained model.
+        
+        Args:
+            filepath (str): Path to save the model
+        """
+        if self.model is None:
+            raise ValueError("No model to save.")
+        
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        self.model.save(filepath)
+    
+    def load_model(self, filepath: str) -> None:
+        """
+        Load a trained model.
+        
+        Args:
+            filepath (str): Path to the saved model
+        """
+        self.model = tf.keras.models.load_model(filepath)
+    
+    def get_model_summary(self) -> str:
+        """
+        Get model architecture summary.
+        
+        Returns:
+            str: Model summary
+        """
+        if self.model is None:
+            return "Model not built yet."
+        
+        summary_list = []
+        self.model.summary(print_fn=lambda x: summary_list.append(x))
+        return '\n'.join(summary_list)
+    
+def create_model2_ner(vocab_size: int, num_tags: int, max_sequence_length: int,
+                     **kwargs) -> Model2NER:
+    """
+    Factory function to create Model 2 NER model.
+    
+    Args:
+        vocab_size (int): Size of vocabulary
+        num_tags (int): Number of NER tags
+        max_sequence_length (int): Maximum sequence length
+        **kwargs: Additional model parameters
+        
+    Returns:
+        Model2NER: Initialized Model 2
+    """
+    return Model2NER(
+        vocab_size=vocab_size,
+        num_tags=num_tags,
+        max_sequence_length=max_sequence_length,
+        **kwargs
+    )
+
+
+def train_model2_ner(model: Model2NER, 
+                    X_train: np.ndarray, y_train: np.ndarray,
+                    X_val: np.ndarray, y_val: np.ndarray,
+                    model_save_path: str = "models/model2_ner.h5",
+                    results_save_path: str = "results/model2_results.json",
+                    **kwargs) -> Dict[str, Any]:
+    """
+    Train Model 2 and save results.
+    
+    Args:
+        model (Model2NER): Model to train
+        X_train, y_train: Training data
+        X_val, y_val: Validation data
+        model_save_path (str): Path to save the model
+        results_save_path (str): Path to save results
+        **kwargs: Additional training parameters
+        
+    Returns:
+        Dict[str, Any]: Training results
+    """
+    # Train the model
+    training_results = model.train(
+        X_train, y_train, X_val, y_val,
+        **kwargs
+    )
+    
+    # Save model
+    if model_save_path:
+        model.save_model(model_save_path)
+    
+    # Save results
+    save_results(training_results, results_save_path)
+    
+    return training_results
+
+
+# Keep the original AdvancedNERModel for backwards compatibility
 class AdvancedNERModel:
     """Advanced NER model using BiLSTM with attention mechanism."""
     
@@ -48,119 +342,7 @@ class AdvancedNERModel:
         self.use_crf = use_crf
         self.model = None
         self.history = None
-        
-    def build_model(self) -> Model:
-        """
-        Build the advanced model architecture.
-        
-        Returns:
-            Model: Compiled Keras model
-        """
-        # Input layer
-        input_layer = Input(shape=(self.max_sequence_length,), name='input_tokens')
-        
-        # Embedding layer with larger dimension
-        embedding = Embedding(
-            input_dim=self.vocab_size,
-            output_dim=self.embedding_dim,
-            input_length=self.max_sequence_length,
-            mask_zero=True,
-            name='word_embedding'
-        )(input_layer)
-        
-        # Add dropout to embeddings
-        embedding_dropout = Dropout(self.dropout_rate)(embedding)
-        
-        # First BiLSTM layer
-        bilstm1 = Bidirectional(
-            LSTM(self.lstm_units, return_sequences=True, dropout=self.dropout_rate),
-            name='bilstm1'
-        )(embedding_dropout)
-        
-        # Second BiLSTM layer
-        bilstm2 = Bidirectional(
-            LSTM(self.lstm_units // 2, return_sequences=True, dropout=self.dropout_rate),
-            name='bilstm2'
-        )(bilstm1)
-        
-        # Multi-head attention mechanism
-        attention = MultiHeadAttention(
-            num_heads=self.num_attention_heads,
-            key_dim=self.lstm_units,
-            name='multi_head_attention'
-        )(bilstm2, bilstm2)
-        
-        # Add & Norm
-        attention_add = Add()([bilstm2, attention])
-        attention_norm = LayerNormalization()(attention_add)
-        
-        # Dropout after attention
-        attention_dropout = Dropout(self.dropout_rate)(attention_norm)
-        
-        # Feed-forward network
-        ffn = TimeDistributed(
-            Dense(self.lstm_units * 2, activation='relu'),
-            name='ffn1'
-        )(attention_dropout)
-        
-        ffn_dropout = Dropout(self.dropout_rate)(ffn)
-        
-        ffn2 = TimeDistributed(
-            Dense(self.lstm_units, activation='relu'),
-            name='ffn2'
-        )(ffn_dropout)
-        
-        # Add & Norm
-        ffn_add = Add()([attention_dropout, ffn2])
-        ffn_norm = LayerNormalization()(ffn_add)
-        
-        # Output layer
-        if self.use_crf:
-            # CRF layer (requires tensorflow-addons)
-            try:
-                import tensorflow_addons as tfa
-                dense_output = TimeDistributed(
-                    Dense(self.num_tags, activation='linear'),
-                    name='dense_output'
-                )(ffn_norm)
-                
-                crf = tfa.layers.CRF(self.num_tags, name='crf_layer')
-                output = crf(dense_output)
-                
-                # Create model
-                model = Model(inputs=input_layer, outputs=output)
-                
-                # Compile with CRF loss
-                model.compile(
-                    optimizer=Adam(learning_rate=0.001),
-                    loss=crf.loss,
-                    metrics=[crf.accuracy]
-                )
-                
-            except ImportError:
-                print("tensorflow-addons not available, using regular dense layer instead of CRF")
-                self.use_crf = False
-        
-        if not self.use_crf:
-            # Regular dense layer with softmax
-            output = TimeDistributed(
-                Dense(self.num_tags, activation='softmax'),
-                name='tag_predictions'
-            )(ffn_norm)
-            
-            # Create model
-            model = Model(inputs=input_layer, outputs=output)
-            
-            # Compile model
-            model.compile(
-                optimizer=Adam(learning_rate=0.001),
-                loss='sparse_categorical_crossentropy',
-                metrics=['accuracy']
-            )
-        
-        self.model = model
-        return model
-    
+
     def build_simple_bilstm_model(self) -> Model:
         """
         Build a simpler BiLSTM model without attention.
