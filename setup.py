@@ -1,0 +1,41 @@
+from setuptools import setup, find_packages
+
+setup(
+    name="sentence_ner",
+    version="1.0.0",
+    description="Named Entity Recognition (NER) system using IOB2 tagging scheme",
+    author="NER Project Team",
+    author_email="contact@nerproject.com",
+    packages=find_packages(),
+    install_requires=[
+        "pandas>=1.5.0",
+        "numpy>=1.24.0",
+        "scikit-learn>=1.3.0",
+        "matplotlib>=3.6.0",
+        "seaborn>=0.12.0",
+        "jupyter>=1.0.0",
+        "tensorflow>=2.13.0",
+        "torch>=2.0.0",
+        "transformers>=4.30.0",
+        "spacy>=3.6.0",
+        "nltk>=3.8.0",
+        "plotly>=5.15.0",
+    ],
+    python_requires=">=3.8",
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+    ],
+    keywords="named-entity-recognition ner nlp machine-learning",
+    project_urls={
+        "Source": "https://github.com/trehansalil/sentence_ner",
+        "Bug Reports": "https://github.com/trehansalil/sentence_ner/issues",
+    },
+)

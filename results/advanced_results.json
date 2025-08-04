@@ -1,0 +1,162 @@
+{
+  "model_info": {
+    "model_type": "advanced_bilstm",
+    "architecture": "bidirectional_lstm_with_attention",
+    "parameters": {
+      "embedding_dim": 200,
+      "lstm_units": 128,
+      "num_attention_heads": 8,
+      "dropout_rate": 0.3,
+      "use_crf": false
+    },
+    "training_params": {
+      "epochs": 50,
+      "batch_size": 32,
+      "patience": 15
+    },
+    "training_time_seconds": 103.226079,
+    "total_parameters": 1278721
+  },
+  "training_results": {
+    "final_train_loss": 0.1265331506729126,
+    "final_train_accuracy": 0.9544411897659302,
+    "final_val_loss": 0.31079739332199097,
+    "final_val_accuracy": 0.9121142625808716,
+    "best_val_loss": 0.29335981607437134,
+    "best_val_accuracy": 0.9133653044700623,
+    "epochs_trained": 16
+  },
+  "test_metrics": {
+    "test_loss": 0.2818455398082733,
+    "test_accuracy": 0.9027314186096191
+  },
+  "evaluation_results": {
+    "token_level": {
+      "accuracy": 0.9027314428690576,
+      "precision": 0.9085031510405563,
+      "recall": 0.9027314428690576,
+      "f1_score": 0.8978582739121862
+    },
+    "sequence_level": {
+      "sequence_accuracy": 0.9027314428690576,
+      "exact_matches": 8659,
+      "total_sequences": 9592
+    },
+    "entity_level": {
+      "precision": 1.0,
+      "recall": 0.7142857142857143,
+      "f1_score": 0.8333333333333333,
+      "true_positives": 5,
+      "false_positives": 0,
+      "false_negatives": 2
+    }
+  },
+  "per_tag_metrics": {
+    "B-art": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 3
+    },
+    "B-eve": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 0
+    },
+    "B-geo": {
+      "precision": 0.7171464330413017,
+      "recall": 0.8655589123867069,
+      "f1_score": 0.784394250513347,
+      "support": 662
+    },
+    "B-gpe": {
+      "precision": 0.9106830122591943,
+      "recall": 0.8469055374592834,
+      "f1_score": 0.8776371308016878,
+      "support": 614
+    },
+    "B-nat": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1_score": 0.0,
+      "support": 3
+    },
+    "B-org": {
+      "precision": 0.7804878048780488,
+      "recall": 0.3007518796992481,
+      "f1_score": 0.43419267299864317,
+      "support": 532
+    },
+    "B-per": {
+      "precision": 0.6240530303030303,
+      "recall": 0.8331226295828066,
+      "f1_score": 0.713589604764483,
+      "support": 791
+    },
+    "B-tim": {
+      "precision": 0.9318181818181818,
+      "recall": 0.7884615384615384,
+      "f1_score": 0.8541666666666666,
+      "support": 104
+    },
+    "O": {
+      "precision": 0.9697366506620108,
+      "recall": 0.9683277640563708,
+      "f1_score": 0.9690316952602501,
+      "support": 6883
+    }
+  },
+  "error_analysis": {
+    "total_errors": 930,
+    "most_common_errors": {
+      "O -> B-per": 192,
+      "B-org -> B-geo": 152,
+      "B-org -> B-per": 119,
+      "B-per -> O": 88,
+      "B-org -> O": 86,
+      "B-geo -> B-per": 54,
+      "B-gpe -> B-geo": 45,
+      "B-gpe -> B-per": 26,
+      "B-geo -> B-gpe": 18,
+      "B-per -> B-geo": 18
+    }
+  },
+  "metadata": {
+    "timestamp": "2025-08-02T09:50:46.084210",
+    "data_splits": {
+      "train_size": 28776,
+      "val_size": 9592,
+      "test_size": 9592
+    }
+  },
+  "comparison_with_baseline": {
+    "improvements": {
+      "Token Accuracy": -1.3761467889908174,
+      "Token F1": -1.7246067382834074,
+      "Sequence Accuracy": -1.3761467889908174,
+      "Entity F1": 0.0
+    },
+    "baseline_metrics": {
+      "token_level": {
+        "accuracy": 0.9164929107589658,
+        "precision": 0.9211431291383753,
+        "recall": 0.9164929107589658,
+        "f1_score": 0.9151043412950203
+      },
+      "sequence_level": {
+        "sequence_accuracy": 0.9164929107589658,
+        "exact_matches": 8791,
+        "total_sequences": 9592
+      },
+      "entity_level": {
+        "precision": 1.0,
+        "recall": 0.7142857142857143,
+        "f1_score": 0.8333333333333333,
+        "true_positives": 5,
+        "false_positives": 0,
+        "false_negatives": 2
+      }
+    }
+  }
+}
